@@ -5,7 +5,18 @@ const STORAGE_KEY = "activity-wheel-state";
 function getState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const state = JSON.parse(raw);
+      // Migrate old format: string[] → {key, completedAt}[]
+      if (state.completedMissions?.length > 0 && typeof state.completedMissions[0] === "string") {
+        state.completedMissions = state.completedMissions.map((key) => ({
+          key,
+          completedAt: null,
+        }));
+        saveState(state);
+      }
+      return state;
+    }
   } catch {
     // ignore
   }
@@ -23,15 +34,15 @@ export function getCompletedMissions() {
 export function markMissionComplete(category, missionTitle) {
   const state = getState();
   const key = `${category}::${missionTitle}`;
-  if (!state.completedMissions.includes(key)) {
-    state.completedMissions.push(key);
+  if (!state.completedMissions.some((m) => m.key === key)) {
+    state.completedMissions.push({ key, completedAt: new Date().toISOString() });
   }
   saveState(state);
 }
 
 export function isMissionComplete(category, missionTitle) {
   const key = `${category}::${missionTitle}`;
-  return getState().completedMissions.includes(key);
+  return getState().completedMissions.some((m) => m.key === key);
 }
 
 export function getStarCount() {
