@@ -1,4 +1,6 @@
 import { useState, useCallback } from "react";
+import Homepage from "./components/Homepage";
+import CompletedActivities from "./components/CompletedActivities";
 import Wheel from "./components/Wheel";
 import Envelope from "./components/Envelope";
 import MissionCard from "./components/MissionCard";
@@ -14,6 +16,8 @@ import {
 } from "./data/storage";
 import "./App.css";
 
+const PHASE_HOME = "home";
+const PHASE_COMPLETED = "completed";
 const PHASE_WHEEL = "wheel";
 const PHASE_ENVELOPE = "envelope";
 const PHASE_CARD = "card";
@@ -29,7 +33,7 @@ function pickMission(categoryId) {
 }
 
 export default function App() {
-  const [phase, setPhase] = useState(PHASE_WHEEL);
+  const [phase, setPhase] = useState(PHASE_HOME);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [currentMission, setCurrentMission] = useState(null);
   const [starCount, setStarCount] = useState(getStarCount);
@@ -65,17 +69,30 @@ export default function App() {
     setCurrentMission(null);
   };
 
-  const completedCount = getCompletedMissions().length;
+  const goHome = () => {
+    setPhase(PHASE_HOME);
+    setSelectedCategory(null);
+    setCurrentMission(null);
+  };
+
+  if (phase === PHASE_HOME) {
+    return (
+      <Homepage
+        onGoToWheel={() => setPhase(PHASE_WHEEL)}
+        onGoToCompleted={() => setPhase(PHASE_COMPLETED)}
+      />
+    );
+  }
+
+  if (phase === PHASE_COMPLETED) {
+    return <CompletedActivities onBack={goHome} />;
+  }
 
   return (
     <div className="app">
       <header className="app__header">
+        <button className="app__home-btn" onClick={goHome}>← Home</button>
         <h1 className="app__title">🎯 Activity Wheel</h1>
-        {completedCount > 0 && (
-          <span className="app__completed">
-            {completedCount} mission{completedCount !== 1 ? "s" : ""} done!
-          </span>
-        )}
       </header>
 
       <StarCounter count={starCount} />
