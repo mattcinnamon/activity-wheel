@@ -1,0 +1,54 @@
+.wheel-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  padding-top: 24px;
+}
+
+.wheel-pointer {
+  font-size: 36px;
+  color: #ff1744;
+  z-index: 10;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  line-height: 1;
+  margin-bottom: -10px;
+}
+
+.wheel-svg {
+  width: min(85vw, 400px);
+  height: min(85vw, 400px);
+  cursor: pointer;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
+  border-radius: 50%;
+  will-change: transform;
+}
+
+.wheel-svg:active {
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2));
+}
+
+.wheel-emoji {
+  pointer-events: none;
+}
+
+.wheel-label {
+  pointer-events: none;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.wheel-spin-text {
+  pointer-events: none;
+}
+
+.wheel-hint {
+  margin-top: 16px;
+  font-size: 18px;
+  color: #888;
+  animation: bounce 1.5s ease infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
