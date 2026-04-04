@@ -217,23 +217,13 @@ export default function Wheel({ onResult, disabled }) {
               const isStar = seg.id === "star";
 
               // Emoji at far outer edge
-              const emojiR = r * 0.78;
+              const emojiR = r * 0.82;
               const emojiPos = polarToCartesian(cx, cy, emojiR, midAngle);
 
-              // Text positioned along the radial line from centre
-              // We place it at the midpoint radius, anchored at start,
-              // and rotate so it reads outward from centre
-              const labelR = r * 0.46;
-              const labelPos = polarToCartesian(cx, cy, labelR, midAngle);
-
-              // SVG rotation: midAngle is in our coordinate system (0° = top, CW)
-              // For SVG transform rotate, we need the angle where 0° = right, CW
-              // Our polarToCartesian subtracts 90°, so the visual angle = midAngle - 90
-              // But for text rotation we want text baseline along the radial direction
-              // rotate(angle) in SVG: 0° = pointing right
-              // We want text to point along the radial from centre to edge
-              // The radial direction in SVG degrees = midAngle - 90
-              const svgRotation = midAngle;
+              // SVG rotate() uses 0° = 3 o'clock (right), CW
+              // Our angle system uses 0° = 12 o'clock (top), CW
+              // So SVG rotation = midAngle - 90
+              const svgRotation = midAngle - 90;
 
               return (
                 <g key={seg.id + "-label"}>
@@ -247,18 +237,14 @@ export default function Wheel({ onResult, disabled }) {
                   >
                     {seg.emoji}
                   </text>
-                  {/* Radial text: use a rotated group so the text baseline runs along the radius */}
-                  <g transform={`
-                    translate(${cx}, ${cy})
-                    rotate(${svgRotation})
-                  `}>
+                  {/* Radial text: rotated group so text reads centre → edge */}
+                  <g transform={`translate(${cx}, ${cy}) rotate(${svgRotation})`}>
                     <text
-                      x={0}
-                      y={0}
-                      dx={labelR * 0.55}
+                      x="38"
+                      y="0"
                       textAnchor="start"
                       dominantBaseline="central"
-                      fontSize="15"
+                      fontSize="14"
                       fontWeight="800"
                       fill="#fff"
                       className="wheel-label"
