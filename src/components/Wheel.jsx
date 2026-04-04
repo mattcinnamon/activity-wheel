@@ -40,24 +40,19 @@ function describeArc(cx, cy, r, startAngle, sweepAngle) {
   return `M ${cx} ${cy} L ${start.x} ${start.y} A ${r} ${r} 0 ${largeArc} 1 ${end.x} ${end.y} Z`;
 }
 
-// Bite mark path for the caterpillar chomp
-function describeBite(cx, cy, r, midAngle, biteSize) {
-  const biteR = biteSize;
-  const biteCenter = polarToCartesian(cx, cy, r - biteR * 0.4, midAngle);
-  return { cx: biteCenter.x, cy: biteCenter.y, r: biteR };
-}
-
 export default function Wheel({ onResult, disabled }) {
   const [spinning, setSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [chosenSeg, setChosenSeg] = useState(null);
   const [showCaterpillar, setShowCaterpillar] = useState(false);
+  const [biteStage, setBiteStage] = useState(0); // 0=none, 1=first bite, 2=second bite, 3=big bite
   const spinCountRef = useRef(0);
 
   const spin = useCallback(() => {
     if (spinning || disabled) return;
     setShowCaterpillar(false);
     setChosenSeg(null);
+    setBiteStage(0);
     setSpinning(true);
 
     // Weighted random: star has half chance
@@ -87,10 +82,15 @@ export default function Wheel({ onResult, disabled }) {
       setChosenSeg(chosen);
       setShowCaterpillar(true);
 
-      // Delay the callback to let the chomp animation play
+      // Animate bites: small → medium → big chomp
+      setTimeout(() => setBiteStage(1), 300);
+      setTimeout(() => setBiteStage(2), 600);
+      setTimeout(() => setBiteStage(3), 900);
+
+      // Transition to envelope/result after eating
       setTimeout(() => {
         onResult(CATEGORIES[chosenIndex]);
-      }, 1200);
+      }, 2000);
     }, 4000);
   }, [spinning, disabled, onResult]);
 
@@ -98,12 +98,12 @@ export default function Wheel({ onResult, disabled }) {
     cy = 200,
     r = 180;
 
-  // Calculate caterpillar position (at the edge of the chosen segment)
-  // The caterpillar appears at the midpoint angle of the chosen segment
-  // But since the wheel has rotated, we need the visual position after rotation
-  // The pointer is at top (0°), and after rotation the chosen segment's mid is at top
-  // So caterpillar always appears at top
-  const bite = chosenSeg ? describeBite(cx, cy, r, 0, 30) : null;
+  // Bite sizes grow with each stage
+  const biteRadii = [0, 18, 28, 42];
+  const currentBiteR = biteRadii[biteStage] || 0;
+
+  // Bite position at top of apple (where pointer is)
+  const bitePos = polarToCartesian(cx, cy, r - currentBiteR * 0.3, 0);
 
   return (
     <div className="wheel-container">
@@ -134,16 +134,15 @@ export default function Wheel({ onResult, disabled }) {
                 Z
               `} />
             </clipPath>
-            {/* Bite mask for caterpillar chomp */}
-            {showCaterpillar && bite && (
+            {/* Bite mask - grows in stages */}
+            {biteStage > 0 && (
               <mask id="bite-mask">
                 <rect width="400" height="400" fill="white" />
                 <circle
-                  cx={bite.cx}
-                  cy={bite.cy}
-                  r={bite.r}
+                  cx={bitePos.x}
+                  cy={bitePos.y}
+                  r={currentBiteR}
                   fill="black"
-                  className="bite-circle"
                 />
               </mask>
             )}
@@ -164,12 +163,13 @@ export default function Wheel({ onResult, disabled }) {
             fill="#c0392b"
             stroke="#a93226"
             strokeWidth="3"
+            mask={biteStage > 0 ? "url(#bite-mask)" : undefined}
           />
 
           {/* Segments clipped to apple shape */}
           <g
             clipPath="url(#apple-clip)"
-            mask={showCaterpillar && bite ? "url(#bite-mask)" : undefined}
+            mask={biteStage > 0 ? "url(#bite-mask)" : undefined}
           >
             {SEGMENTS.map((seg) => (
               <path
@@ -182,21 +182,33 @@ export default function Wheel({ onResult, disabled }) {
             ))}
           </g>
 
-          {/* Labels - text radiating from centre outward */}
+          {/* Bite interior (lighter color to show "flesh" of apple) */}
+          {biteStage > 0 && (
+            <circle
+              cx={bitePos.x}
+              cy={bitePos.y}
+              r={currentBiteR - 2}
+              fill="#f5deb3"
+              clipPath="url(#apple-clip)"
+              opacity="0.9"
+            />
+          )}
+
+          {/* Labels - text radiating from centre outward, same size, emoji at outer edge */}
           <g clipPath="url(#apple-clip)">
             {SEGMENTS.map((seg) => {
               const midAngle = seg.startAngle + seg.sweepAngle / 2;
               const isStar = seg.id === "star";
 
-              // Emoji closer to edge
-              const emojiR = r * 0.72;
+              // Emoji at far outer edge
+              const emojiR = r * 0.78;
               const emojiPos = polarToCartesian(cx, cy, emojiR, midAngle);
 
-              // Label between centre and emoji
-              const labelR = r * 0.44;
+              // Label text radiating from centre outward
+              const labelR = r * 0.46;
               const labelPos = polarToCartesian(cx, cy, labelR, midAngle);
 
-              // Rotation so text reads from centre outward
+              // Rotate text to radiate outward from centre
               const textRotation = midAngle;
 
               return (
@@ -206,7 +218,7 @@ export default function Wheel({ onResult, disabled }) {
                     y={emojiPos.y}
                     textAnchor="middle"
                     dominantBaseline="central"
-                    fontSize={isStar ? "22" : "32"}
+                    fontSize={isStar ? "20" : "28"}
                     className="wheel-emoji"
                   >
                     {seg.emoji}
@@ -216,7 +228,7 @@ export default function Wheel({ onResult, disabled }) {
                     y={labelPos.y}
                     textAnchor="middle"
                     dominantBaseline="central"
-                    fontSize={isStar ? "12" : "16"}
+                    fontSize="15"
                     fontWeight="800"
                     fill="#fff"
                     className="wheel-label"
@@ -260,11 +272,11 @@ export default function Wheel({ onResult, disabled }) {
           </text>
         </svg>
 
-        {/* Caterpillar character (appears outside the SVG at the top) */}
+        {/* Caterpillar character - appears at the bite and chomps */}
         {showCaterpillar && (
-          <div className="caterpillar" aria-label="Caterpillar chomping the apple">
-            <div className="caterpillar__body">
-              <div className="caterpillar__head">🐛</div>
+          <div className="caterpillar" aria-label="Caterpillar eating the apple">
+            <div className={`caterpillar__head caterpillar__head--stage${biteStage}`}>
+              🐛
             </div>
           </div>
         )}
