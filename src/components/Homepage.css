@@ -17,9 +17,108 @@
 .homepage__subtitle {
   font-size: 16px;
   color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
+/* Live Mission Card */
+.homepage__live-mission {
+  width: 100%;
+  max-width: 360px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 20px;
+  border-left: 4px solid;
+  position: relative;
+}
+
+.homepage__live-badge {
+  position: absolute;
+  top: -10px;
+  right: 16px;
+  background: #ff1744;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  animation: livePulse 2s ease infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.homepage__live-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.homepage__live-emoji {
+  font-size: 32px;
+}
+
+.homepage__live-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.homepage__live-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.homepage__live-time {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+}
+
+.homepage__live-desc {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.homepage__live-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.homepage__live-btn {
+  flex: 1;
+  border: none;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: transform 0.15s ease;
+}
+
+.homepage__live-btn:active {
+  transform: scale(0.96);
+}
+
+.homepage__live-btn--done {
+  background: linear-gradient(135deg, #4CAF50, #66BB6A);
+  color: #fff;
+}
+
+.homepage__live-btn--view {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+/* Tiles */
 .homepage__tiles {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -73,6 +172,7 @@
   font-weight: 600;
 }
 
+/* Summary */
 .homepage__summary {
   background: rgba(255, 255, 255, 0.12);
   border-radius: 16px;

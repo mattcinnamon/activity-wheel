@@ -56,6 +56,30 @@ export function addStar() {
   return state.starCount;
 }
 
+export function getActiveMission() {
+  return getState().activeMission || null;
+}
+
+export function setActiveMission(category, mission) {
+  const state = getState();
+  state.activeMission = {
+    categoryId: category.id,
+    categoryLabel: category.label,
+    categoryEmoji: category.emoji,
+    categoryColor: category.color,
+    title: mission.title,
+    description: mission.description,
+    startedAt: new Date().toISOString(),
+  };
+  saveState(state);
+}
+
+export function clearActiveMission() {
+  const state = getState();
+  state.activeMission = null;
+  saveState(state);
+}
+
 export function resetAll() {
   localStorage.removeItem(STORAGE_KEY);
 }
