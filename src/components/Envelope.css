@@ -4,36 +4,95 @@
   align-items: center;
   padding: 40px 20px;
   cursor: pointer;
-  animation: slideUp 0.5s ease-out;
+  animation: envelopeSlideUp 0.5s ease-out;
+  perspective: 800px;
 }
 
-@keyframes slideUp {
+@keyframes envelopeSlideUp {
   from { opacity: 0; transform: translateY(40px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-.envelope {
+/* 3D flip container */
+.envelope-3d {
   position: relative;
   width: min(80vw, 300px);
   height: min(50vw, 200px);
-  perspective: 600px;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease-in-out;
 }
 
-.envelope__body {
+.envelope-3d--flipped {
+  transform: rotateY(180deg);
+}
+
+/* Shared face styles */
+.envelope-face {
   position: absolute;
   width: 100%;
   height: 100%;
+  backface-visibility: hidden;
+  border-radius: 12px;
+}
+
+/* Front face */
+.envelope-face--front {
+  z-index: 2;
+}
+
+.envelope-front-body {
+  width: 100%;
+  height: 100%;
   background: linear-gradient(145deg, #f5e6d3, #e8d5c0);
-  border-radius: 8px;
+  border-radius: 12px;
+  border: 2px solid #d4c4b0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.envelope-front-emoji {
+  font-size: 64px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.envelope-front-tap {
+  font-size: 16px;
+  color: #8b7355;
+  font-weight: 600;
+  animation: envelopePulse 1.2s ease infinite;
+}
+
+@keyframes envelopePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Back face (mirrored) */
+.envelope-face--back {
+  transform: rotateY(180deg);
+  z-index: 1;
+}
+
+.envelope-back-body {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(145deg, #f5e6d3, #e8d5c0);
+  border-radius: 12px;
+  border: 2px solid #d4c4b0;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #d4c4b0;
-  z-index: 2;
+  overflow: visible;
+  position: relative;
 }
 
-.envelope__flap {
+/* Flap - triangle on back, opens upward */
+.envelope-flap {
   position: absolute;
   top: 0;
   left: 0;
@@ -41,58 +100,46 @@
   height: 55%;
   background: linear-gradient(160deg, #eedcc8, #e0ccb5);
   clip-path: polygon(0 0, 50% 70%, 100% 0);
-  z-index: 3;
-  transform-origin: top center;
-  transition: transform 0.6s ease-in-out;
   border: 2px solid #d4c4b0;
-}
-
-.envelope--opened .envelope__flap {
-  transform: rotateX(180deg);
+  transform-origin: top center;
+  transition: transform 0.5s ease-in-out;
   z-index: 1;
 }
 
-.envelope__front {
+.envelope-flap--open {
+  transform: rotateX(180deg);
+}
+
+/* Card that slides out */
+.envelope-card-slide {
+  position: absolute;
+  top: 0;
+  left: 10%;
+  width: 80%;
+  background: #fff;
+  border-radius: 10px;
+  padding: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  transition: transform 0.5s ease-out;
+  transform: translateY(0);
+  z-index: 0;
 }
 
-.envelope__emoji {
-  font-size: 48px;
+.envelope-card-slide--out {
+  transform: translateY(-110%);
 }
 
-.envelope__tap-text {
-  font-size: 16px;
-  color: #8b7355;
-  font-weight: 600;
-  animation: pulse 1.2s ease infinite;
+.envelope-card-slide__emoji {
+  font-size: 32px;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-.envelope__card-peek {
-  position: absolute;
-  top: -30px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: white;
-  border-radius: 8px;
-  padding: 8px 24px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  animation: peekUp 0.5s ease-out 0.3s both;
-  z-index: 4;
-}
-
-@keyframes peekUp {
-  from { top: 20px; opacity: 0; }
-  to { top: -30px; opacity: 1; }
-}
-
-.card-peek-emoji {
-  font-size: 28px;
+.envelope-card-slide__title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #333;
+  text-align: center;
 }

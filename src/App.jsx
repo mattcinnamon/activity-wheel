@@ -8,11 +8,13 @@ import Celebration from "./components/Celebration";
 import StarCounter from "./components/StarCounter";
 import missions from "./data/missions";
 import {
-  getCompletedMissions,
   markMissionComplete,
   isMissionComplete,
   getStarCount,
   addStar,
+  getActiveMission,
+  setActiveMission,
+  clearActiveMission,
 } from "./data/storage";
 import "./App.css";
 
@@ -22,6 +24,15 @@ const PHASE_WHEEL = "wheel";
 const PHASE_ENVELOPE = "envelope";
 const PHASE_CARD = "card";
 const PHASE_CELEBRATION = "celebration";
+
+const CATEGORIES = [
+  { id: "explore", label: "Explore", emoji: "🔍", color: "#4CAF50" },
+  { id: "experiment", label: "Experiment", emoji: "🧪", color: "#2196F3" },
+  { id: "dance", label: "Dance", emoji: "💃", color: "#E91E63" },
+  { id: "puzzle", label: "Puzzle", emoji: "🧩", color: "#FF9800" },
+  { id: "build", label: "Build", emoji: "🧱", color: "#795548" },
+  { id: "paint", label: "Paint", emoji: "🎨", color: "#9C27B0" },
+];
 
 function pickMission(categoryId) {
   const pool = missions[categoryId];
@@ -48,6 +59,7 @@ export default function App() {
     } else {
       const mission = pickMission(category.id);
       setCurrentMission(mission);
+      setActiveMission(category, mission);
       setPhase(PHASE_ENVELOPE);
     }
   }, []);
@@ -60,13 +72,43 @@ export default function App() {
     if (selectedCategory && currentMission) {
       markMissionComplete(selectedCategory.id, currentMission.title);
     }
+    clearActiveMission();
     resetToWheel();
   }, [selectedCategory, currentMission]);
+
+  const handleCompleteActiveMission = useCallback(() => {
+    const active = getActiveMission();
+    if (active) {
+      markMissionComplete(active.categoryId, active.title);
+      clearActiveMission();
+    }
+    setPhase(PHASE_HOME);
+  }, []);
+
+  const handleResumeActiveMission = useCallback(() => {
+    const active = getActiveMission();
+    if (active) {
+      const cat = CATEGORIES.find((c) => c.id === active.categoryId) || {
+        id: active.categoryId,
+        label: active.categoryLabel,
+        emoji: active.categoryEmoji,
+        color: active.categoryColor,
+      };
+      setSelectedCategory(cat);
+      setCurrentMission({ title: active.title, description: active.description });
+      setPhase(PHASE_CARD);
+    }
+  }, []);
 
   const resetToWheel = () => {
     setPhase(PHASE_WHEEL);
     setSelectedCategory(null);
     setCurrentMission(null);
+  };
+
+  const handleSpinAgain = () => {
+    clearActiveMission();
+    resetToWheel();
   };
 
   const goHome = () => {
@@ -80,6 +122,8 @@ export default function App() {
       <Homepage
         onGoToWheel={() => setPhase(PHASE_WHEEL)}
         onGoToCompleted={() => setPhase(PHASE_COMPLETED)}
+        onCompleteActive={handleCompleteActiveMission}
+        onResumeActive={handleResumeActiveMission}
       />
     );
   }
@@ -115,7 +159,7 @@ export default function App() {
             category={selectedCategory}
             mission={currentMission}
             onComplete={handleComplete}
-            onBack={resetToWheel}
+            onBack={handleSpinAgain}
           />
         )}
 

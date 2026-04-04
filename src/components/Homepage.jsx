@@ -1,4 +1,4 @@
-import { getCompletedMissions, getStarCount } from "../data/storage";
+import { getCompletedMissions, getStarCount, getActiveMission } from "../data/storage";
 import "./Homepage.css";
 
 const CATEGORIES = [
@@ -10,9 +10,22 @@ const CATEGORIES = [
   { id: "paint", emoji: "🎨", color: "#9C27B0" },
 ];
 
-export default function Homepage({ onGoToWheel, onGoToCompleted }) {
+function timeAgo(iso) {
+  if (!iso) return "";
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "Just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
+export default function Homepage({ onGoToWheel, onGoToCompleted, onCompleteActive, onResumeActive }) {
   const completed = getCompletedMissions();
   const starCount = getStarCount();
+  const activeMission = getActiveMission();
 
   const categoryCounts = {};
   for (const cat of CATEGORIES) categoryCounts[cat.id] = 0;
@@ -26,9 +39,40 @@ export default function Homepage({ onGoToWheel, onGoToCompleted }) {
       <h1 className="homepage__title">🎯 Activity Wheel</h1>
       <p className="homepage__subtitle">What shall we do today?</p>
 
+      {activeMission && (
+        <div
+          className="homepage__live-mission"
+          style={{ borderColor: activeMission.categoryColor }}
+        >
+          <div className="homepage__live-badge">Live Mission</div>
+          <div className="homepage__live-top">
+            <span className="homepage__live-emoji">{activeMission.categoryEmoji}</span>
+            <div className="homepage__live-info">
+              <span className="homepage__live-title">{activeMission.title}</span>
+              <span className="homepage__live-time">{timeAgo(activeMission.startedAt)}</span>
+            </div>
+          </div>
+          <p className="homepage__live-desc">{activeMission.description}</p>
+          <div className="homepage__live-actions">
+            <button
+              className="homepage__live-btn homepage__live-btn--done"
+              onClick={onCompleteActive}
+            >
+              Mark Complete ✓
+            </button>
+            <button
+              className="homepage__live-btn homepage__live-btn--view"
+              onClick={onResumeActive}
+            >
+              View
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="homepage__tiles">
         <button className="homepage__tile homepage__tile--wheel" onClick={onGoToWheel}>
-          <span className="homepage__tile-emoji">🎡</span>
+          <span className="homepage__tile-emoji">🍎</span>
           <span className="homepage__tile-label">Spin the Wheel</span>
           <span className="homepage__tile-sub">Pick a new activity!</span>
         </button>
