@@ -48,6 +48,7 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [currentMission, setCurrentMission] = useState(null);
   const [starCount, setStarCount] = useState(getStarCount);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const handleWheelResult = useCallback((category) => {
     setSelectedCategory(category);
@@ -82,7 +83,7 @@ export default function App() {
       markMissionComplete(active.categoryId, active.title);
       clearActiveMission();
     }
-    setPhase(PHASE_HOME);
+    setRefreshKey((k) => k + 1);
   }, []);
 
   const handleResumeActiveMission = useCallback(() => {
@@ -120,6 +121,7 @@ export default function App() {
   if (phase === PHASE_HOME) {
     return (
       <Homepage
+        key={refreshKey}
         onGoToWheel={() => setPhase(PHASE_WHEEL)}
         onGoToCompleted={() => setPhase(PHASE_COMPLETED)}
         onCompleteActive={handleCompleteActiveMission}
