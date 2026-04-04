@@ -86,24 +86,31 @@ export default function Homepage({ onGoToWheel, onGoToCompleted, onCompleteActiv
         </button>
       </div>
 
-      {completed.length > 0 && (
-        <div className="homepage__summary">
-          <h2 className="homepage__summary-title">Progress</h2>
-          <div className="homepage__categories">
-            {CATEGORIES.map((cat) => (
-              <div key={cat.id} className="homepage__cat" style={{ borderColor: cat.color }}>
+      <div className="homepage__summary">
+        <h2 className="homepage__summary-title">Progress</h2>
+        <div className="homepage__categories">
+          {CATEGORIES.map((cat) => {
+            const total = 12; // approximate per category
+            const count = categoryCounts[cat.id];
+            return (
+              <div
+                key={cat.id}
+                className="homepage__cat"
+                style={{ backgroundColor: cat.color + "22", borderColor: cat.color }}
+              >
                 <span className="homepage__cat-emoji">{cat.emoji}</span>
+                <span className="homepage__cat-label">{cat.id}</span>
                 <span className="homepage__cat-count" style={{ color: cat.color }}>
-                  {categoryCounts[cat.id]}
+                  {count}
                 </span>
               </div>
-            ))}
-          </div>
-          {starCount > 0 && (
-            <p className="homepage__stars">⭐ {starCount} star{starCount !== 1 ? "s" : ""} collected</p>
-          )}
+            );
+          })}
         </div>
-      )}
+        {starCount > 0 && (
+          <p className="homepage__stars">⭐ {starCount} star{starCount !== 1 ? "s" : ""} collected</p>
+        )}
+      </div>
     </div>
   );
 }

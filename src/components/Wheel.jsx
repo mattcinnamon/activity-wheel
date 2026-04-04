@@ -45,8 +45,9 @@ export default function Wheel({ onResult, disabled }) {
   const [rotation, setRotation] = useState(0);
   const [chosenSeg, setChosenSeg] = useState(null);
   const [showCaterpillar, setShowCaterpillar] = useState(false);
-  const [biteStage, setBiteStage] = useState(0); // 0=none, 1=first bite, 2=second bite, 3=big bite
+  const [biteStage, setBiteStage] = useState(0);
   const spinCountRef = useRef(0);
+  const chosenIndexRef = useRef(0);
 
   const spin = useCallback(() => {
     if (spinning || disabled) return;
@@ -67,6 +68,7 @@ export default function Wheel({ onResult, disabled }) {
         break;
       }
     }
+    chosenIndexRef.current = chosenIndex;
 
     const chosen = SEGMENTS[chosenIndex];
     const segmentMid = chosen.startAngle + chosen.sweepAngle / 2;
@@ -89,7 +91,7 @@ export default function Wheel({ onResult, disabled }) {
 
       // Transition to envelope/result after eating
       setTimeout(() => {
-        onResult(CATEGORIES[chosenIndex]);
+        onResult(CATEGORIES[chosenIndexRef.current]);
       }, 2000);
     }, 4000);
   }, [spinning, disabled, onResult]);
@@ -98,12 +100,26 @@ export default function Wheel({ onResult, disabled }) {
     cy = 200,
     r = 180;
 
-  // Bite sizes grow with each stage
+  // Bite position: at the OUTER EDGE of the SELECTED SEGMENT (in SVG space, pre-rotation)
+  // The bite should appear at the midpoint angle of the chosen segment, at the apple's edge
   const biteRadii = [0, 18, 28, 42];
   const currentBiteR = biteRadii[biteStage] || 0;
 
-  // Bite position at top of apple (where pointer is)
-  const bitePos = polarToCartesian(cx, cy, r - currentBiteR * 0.3, 0);
+  let bitePos = { x: cx, y: 10 }; // default fallback
+  if (chosenSeg) {
+    const segMidAngle = chosenSeg.startAngle + chosenSeg.sweepAngle / 2;
+    bitePos = polarToCartesian(cx, cy, r - currentBiteR * 0.2, segMidAngle);
+  }
+
+  // Caterpillar position in the HTML overlay needs to match the segment's visual position
+  // After the wheel stops, the chosen segment's midpoint is at the top (pointer)
+  // So caterpillar always goes at the top edge
+  // But we need to compute exact pixel position from the SVG viewBox
+  let caterpillarStyle = { top: "-12px", left: "50%" };
+  if (chosenSeg) {
+    // The segment mid is rotated to the top, so caterpillar always at top-center
+    caterpillarStyle = { top: "-12px", left: "50%" };
+  }
 
   return (
     <div className="wheel-container">
@@ -134,7 +150,7 @@ export default function Wheel({ onResult, disabled }) {
                 Z
               `} />
             </clipPath>
-            {/* Bite mask - grows in stages */}
+            {/* Bite mask at the selected segment's edge */}
             {biteStage > 0 && (
               <mask id="bite-mask">
                 <rect width="400" height="400" fill="white" />
@@ -182,7 +198,7 @@ export default function Wheel({ onResult, disabled }) {
             ))}
           </g>
 
-          {/* Bite interior (lighter color to show "flesh" of apple) */}
+          {/* Bite interior (apple flesh) */}
           {biteStage > 0 && (
             <circle
               cx={bitePos.x}
@@ -194,7 +210,7 @@ export default function Wheel({ onResult, disabled }) {
             />
           )}
 
-          {/* Labels - text radiating from centre outward, same size, emoji at outer edge */}
+          {/* Labels - text radiating outward from centre along segment axis */}
           <g clipPath="url(#apple-clip)">
             {SEGMENTS.map((seg) => {
               const midAngle = seg.startAngle + seg.sweepAngle / 2;
@@ -204,12 +220,20 @@ export default function Wheel({ onResult, disabled }) {
               const emojiR = r * 0.78;
               const emojiPos = polarToCartesian(cx, cy, emojiR, midAngle);
 
-              // Label text radiating from centre outward
+              // Text positioned along the radial line from centre
+              // We place it at the midpoint radius, anchored at start,
+              // and rotate so it reads outward from centre
               const labelR = r * 0.46;
               const labelPos = polarToCartesian(cx, cy, labelR, midAngle);
 
-              // Rotate text to radiate outward from centre
-              const textRotation = midAngle;
+              // SVG rotation: midAngle is in our coordinate system (0° = top, CW)
+              // For SVG transform rotate, we need the angle where 0° = right, CW
+              // Our polarToCartesian subtracts 90°, so the visual angle = midAngle - 90
+              // But for text rotation we want text baseline along the radial direction
+              // rotate(angle) in SVG: 0° = pointing right
+              // We want text to point along the radial from centre to edge
+              // The radial direction in SVG degrees = midAngle - 90
+              const svgRotation = midAngle;
 
               return (
                 <g key={seg.id + "-label"}>
@@ -223,19 +247,25 @@ export default function Wheel({ onResult, disabled }) {
                   >
                     {seg.emoji}
                   </text>
-                  <text
-                    x={labelPos.x}
-                    y={labelPos.y}
-                    textAnchor="middle"
-                    dominantBaseline="central"
-                    fontSize="15"
-                    fontWeight="800"
-                    fill="#fff"
-                    className="wheel-label"
-                    transform={`rotate(${textRotation}, ${labelPos.x}, ${labelPos.y})`}
-                  >
-                    {seg.label}
-                  </text>
+                  {/* Radial text: use a rotated group so the text baseline runs along the radius */}
+                  <g transform={`
+                    translate(${cx}, ${cy})
+                    rotate(${svgRotation})
+                  `}>
+                    <text
+                      x={0}
+                      y={0}
+                      dx={labelR * 0.55}
+                      textAnchor="start"
+                      dominantBaseline="central"
+                      fontSize="15"
+                      fontWeight="800"
+                      fill="#fff"
+                      className="wheel-label"
+                    >
+                      {seg.label}
+                    </text>
+                  </g>
                 </g>
               );
             })}
@@ -272,9 +302,13 @@ export default function Wheel({ onResult, disabled }) {
           </text>
         </svg>
 
-        {/* Caterpillar character - appears at the bite and chomps */}
+        {/* Caterpillar - positioned at the top where the selected segment sits */}
         {showCaterpillar && (
-          <div className="caterpillar" aria-label="Caterpillar eating the apple">
+          <div
+            className="caterpillar"
+            style={caterpillarStyle}
+            aria-label="Caterpillar eating the apple"
+          >
             <div className={`caterpillar__head caterpillar__head--stage${biteStage}`}>
               🐛
             </div>

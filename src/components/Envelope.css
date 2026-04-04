@@ -110,7 +110,7 @@
   transform: rotateX(180deg);
 }
 
-/* Card that slides out */
+/* Card that slides out - in front of envelope */
 .envelope-card-slide {
   position: absolute;
   top: 0;
@@ -119,18 +119,18 @@
   background: #fff;
   border-radius: 10px;
   padding: 14px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
   transition: transform 0.5s ease-out;
   transform: translateY(0);
-  z-index: 0;
+  z-index: 10;
 }
 
 .envelope-card-slide--out {
-  transform: translateY(-110%);
+  transform: translateY(-120%);
 }
 
 .envelope-card-slide__emoji {
