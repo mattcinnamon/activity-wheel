@@ -173,11 +173,16 @@
   font-weight: 700;
   cursor: pointer;
   font-family: inherit;
-  opacity: 0.5;
+  transition: transform 0.15s ease, opacity 0.2s ease;
+}
+
+.menu__generate-btn:active:not(:disabled) {
+  transform: scale(0.97);
 }
 
 .menu__generate-btn:disabled {
   cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .menu__coming-soon {
@@ -185,6 +190,16 @@
   color: rgba(255, 255, 255, 0.5);
   text-align: center;
   line-height: 1.5;
+}
+
+.menu__gen-error {
+  font-size: 13px;
+  color: #ff6b6b;
+  text-align: center;
+  line-height: 1.5;
+  background: rgba(255, 107, 107, 0.1);
+  border-radius: 8px;
+  padding: 10px;
 }
 
 .menu__custom-count {

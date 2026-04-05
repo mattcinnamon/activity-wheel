@@ -8,6 +8,7 @@ import {
   saveCustomActivities,
   resetAll,
 } from "../data/storage";
+import { generateActivities } from "../data/api";
 import "./Menu.css";
 
 export default function Menu({ onClose, onReset }) {
@@ -124,8 +125,13 @@ function ActivitiesPage({ onBack }) {
   };
   const [form, setForm] = useState(criteria);
   const [saved, setSaved] = useState(false);
-  const customActivities = getCustomActivities();
-  const customCount = Object.values(customActivities).reduce((sum, arr) => sum + arr.length, 0);
+  const [generating, setGenerating] = useState(false);
+  const [genError, setGenError] = useState(null);
+  const [genSuccess, setGenSuccess] = useState(false);
+  const [customCount, setCustomCount] = useState(() => {
+    const ca = getCustomActivities();
+    return Object.values(ca).reduce((sum, arr) => sum + arr.length, 0);
+  });
 
   const updateField = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -136,6 +142,30 @@ function ActivitiesPage({ onBack }) {
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
   };
+
+  const handleGenerate = async () => {
+    // Save criteria first
+    saveUserCriteria(form);
+    setGenerating(true);
+    setGenError(null);
+    setGenSuccess(false);
+
+    try {
+      const names = getNames();
+      const activities = await generateActivities(form, names);
+      saveCustomActivities(activities);
+      const count = Object.values(activities).reduce((sum, arr) => sum + arr.length, 0);
+      setCustomCount(count);
+      setGenSuccess(true);
+      setTimeout(() => setGenSuccess(false), 3000);
+    } catch (err) {
+      setGenError(err.message);
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const hasAnyCriteria = form.age || form.likes || form.location;
 
   return (
     <div className="menu">
@@ -204,13 +234,23 @@ function ActivitiesPage({ onBack }) {
           {saved ? "✓ Saved!" : "Save Criteria"}
         </button>
 
-        <button className="menu__generate-btn" disabled>
-          ✨ Generate Custom Activities
+        <button
+          className="menu__generate-btn"
+          disabled={generating || !hasAnyCriteria}
+          onClick={handleGenerate}
+        >
+          {generating ? "Generating..." : genSuccess ? "✓ Activities Generated!" : "✨ Generate Custom Activities"}
         </button>
-        <p className="menu__coming-soon">
-          AI generation coming soon! Save your criteria now and we'll generate
-          personalised activities once the feature is live.
-        </p>
+
+        {!hasAnyCriteria && (
+          <p className="menu__coming-soon">
+            Fill in at least age, likes, or location to generate activities.
+          </p>
+        )}
+
+        {genError && (
+          <p className="menu__gen-error">{genError}</p>
+        )}
 
         {customCount > 0 && (
           <p className="menu__custom-count">
