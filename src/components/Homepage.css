@@ -6,12 +6,39 @@
   min-height: 100dvh;
 }
 
+.homepage__top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 360px;
+  margin-bottom: 4px;
+}
+
+.homepage__spacer {
+  width: 40px;
+}
+
 .homepage__title {
   font-size: 32px;
   font-weight: 800;
   color: #fff;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  margin-bottom: 4px;
+}
+
+.homepage__menu-btn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
+  transition: transform 0.15s ease;
+}
+
+.homepage__menu-btn:active {
+  transform: scale(0.9);
 }
 
 .homepage__subtitle {

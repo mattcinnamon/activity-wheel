@@ -80,6 +80,38 @@ export function clearActiveMission() {
   saveState(state);
 }
 
+// Names (little person + up to 2 big people)
+export function getNames() {
+  return getState().names || { littlePerson: "", bigPerson1: "", bigPerson2: "" };
+}
+
+export function saveNames(names) {
+  const state = getState();
+  state.names = names;
+  saveState(state);
+}
+
+// Custom AI-generated activities
+export function getCustomActivities() {
+  return getState().customActivities || {};
+}
+
+export function saveCustomActivities(activities) {
+  const state = getState();
+  state.customActivities = activities;
+  saveState(state);
+}
+
+export function getUserCriteria() {
+  return getState().userCriteria || null;
+}
+
+export function saveUserCriteria(criteria) {
+  const state = getState();
+  state.userCriteria = criteria;
+  saveState(state);
+}
+
 export function resetAll() {
   localStorage.removeItem(STORAGE_KEY);
 }

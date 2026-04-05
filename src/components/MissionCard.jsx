@@ -5,6 +5,7 @@ export default function MissionCard({
   mission,
   onComplete,
   onBack,
+  onShuffle,
 }) {
   return (
     <div className="mission-card-overlay">
@@ -32,6 +33,14 @@ export default function MissionCard({
           >
             ✅ Done!
           </button>
+          {onShuffle && (
+            <button
+              className="mission-card__btn mission-card__btn--shuffle"
+              onClick={onShuffle}
+            >
+              🔀 Shuffle Activity
+            </button>
+          )}
           <button
             className="mission-card__btn mission-card__btn--back"
             onClick={onBack}

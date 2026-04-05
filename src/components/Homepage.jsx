@@ -22,7 +22,7 @@ function timeAgo(iso) {
   return `${days}d ago`;
 }
 
-export default function Homepage({ onGoToWheel, onGoToCompleted, onCompleteActive, onResumeActive }) {
+export default function Homepage({ onGoToWheel, onGoToCompleted, onGoToMenu, onCompleteActive, onResumeActive }) {
   const completed = getCompletedMissions();
   const starCount = getStarCount();
   const activeMission = getActiveMission();
@@ -36,7 +36,11 @@ export default function Homepage({ onGoToWheel, onGoToCompleted, onCompleteActiv
 
   return (
     <div className="homepage">
-      <h1 className="homepage__title">🎯 Activity Wheel</h1>
+      <div className="homepage__top-bar">
+        <div className="homepage__spacer" />
+        <h1 className="homepage__title">🎯 Activity Wheel</h1>
+        <button className="homepage__menu-btn" onClick={onGoToMenu}>🍔</button>
+      </div>
       <p className="homepage__subtitle">What shall we do today?</p>
 
       {activeMission && (
