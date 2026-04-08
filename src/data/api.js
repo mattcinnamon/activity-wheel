@@ -1,6 +1,6 @@
 // API helper for calling the Cloudflare Worker
 
-const WORKER_URL = import.meta.env.VITE_WORKER_URL || "https://activity-wheel-api.YOUR_SUBDOMAIN.workers.dev";
+const WORKER_URL = import.meta.env.VITE_WORKER_URL || "https://activity-wheel-api.mcbcinnamon.workers.dev";
 
 export async function generateActivities(criteria, names) {
   const response = await fetch(`${WORKER_URL}/generate`, {
