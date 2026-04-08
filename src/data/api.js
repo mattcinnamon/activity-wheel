@@ -3,7 +3,7 @@
 const WORKER_URL = import.meta.env.VITE_WORKER_URL || "https://activity-wheel-api.mcbcinnamon.workers.dev";
 
 export async function generateActivities(criteria, names) {
-  const response = await fetch(`${WORKER_URL}/generate`, {
+  const response = await fetch(WORKER_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ criteria, names }),
