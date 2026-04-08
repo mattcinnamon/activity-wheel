@@ -54,7 +54,10 @@ export default function Homepage({ onGoToWheel, onGoToCompleted, onGoToMenu, onC
           <div className="homepage__live-top">
             <span className="homepage__live-emoji">{activeMission.categoryEmoji}</span>
             <div className="homepage__live-info">
-              <span className="homepage__live-title">{activeMission.title}</span>
+              <span className="homepage__live-title">
+                {activeMission.title}
+                {activeMission.isCustom && <span className="homepage__custom-badge">Custom</span>}
+              </span>
               <span className="homepage__live-time">{timeAgo(activeMission.startedAt)}</span>
             </div>
           </div>

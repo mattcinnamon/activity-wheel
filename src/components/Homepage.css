@@ -99,6 +99,20 @@
   font-size: 16px;
   font-weight: 800;
   color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.homepage__custom-badge {
+  font-size: 9px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 8px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .homepage__live-time {
