@@ -12,4 +12,4 @@ RATE_LIMIT_WINDOW_HOURS = 1
 # Then paste the id below
 [[kv_namespaces]]
 binding = "RATE_LIMITER"
-id = "YOUR_KV_NAMESPACE_ID"
+id = "265b6c91e7cd46c19b1dbe6c919bb975"
