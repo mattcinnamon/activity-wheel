@@ -6,6 +6,8 @@ import {
   saveUserCriteria,
   getCustomActivities,
   saveCustomActivities,
+  getCustomOnly,
+  saveCustomOnly,
   resetAll,
 } from "../data/storage";
 import { generateActivities } from "../data/api";
@@ -13,6 +15,13 @@ import "./Menu.css";
 
 export default function Menu({ onClose, onReset }) {
   const [page, setPage] = useState("main"); // main, names, activities, clear-confirm
+  const [customOnly, setCustomOnly] = useState(getCustomOnly);
+
+  const handleToggleCustomOnly = () => {
+    const next = !customOnly;
+    setCustomOnly(next);
+    saveCustomOnly(next);
+  };
 
   if (page === "names") return <NamesPage onBack={() => setPage("main")} />;
   if (page === "activities") return <ActivitiesPage onBack={() => setPage("main")} />;
@@ -44,6 +53,16 @@ export default function Menu({ onClose, onReset }) {
           <span className="menu__item-label">Edit Activities</span>
           <span className="menu__item-desc">AI-powered custom activities</span>
         </button>
+
+        <div className="menu__toggle-row" onClick={handleToggleCustomOnly}>
+          <div className="menu__toggle-text">
+            <span className="menu__toggle-label">Custom Activities Only</span>
+            <span className="menu__toggle-desc">Only show AI-generated activities on the wheel</span>
+          </div>
+          <div className={`menu__toggle ${customOnly ? "menu__toggle--on" : ""}`}>
+            <div className="menu__toggle-knob" />
+          </div>
+        </div>
 
         <button className="menu__item menu__item--danger" onClick={() => setPage("clear-confirm")}>
           <span className="menu__item-icon">🗑️</span>

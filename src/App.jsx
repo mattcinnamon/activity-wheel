@@ -17,6 +17,7 @@ import {
   setActiveMission,
   clearActiveMission,
   getCustomActivities,
+  getCustomOnly,
 } from "./data/storage";
 import "./App.css";
 
@@ -38,10 +39,11 @@ const CATEGORIES = [
 ];
 
 function pickMission(categoryId, excludeTitle) {
-  const defaultPool = missions[categoryId] || [];
+  const customOnly = getCustomOnly();
   const custom = getCustomActivities();
   const customPool = custom[categoryId] || [];
   const taggedCustom = customPool.map((m) => ({ ...m, isCustom: true }));
+  const defaultPool = customOnly ? [] : (missions[categoryId] || []);
   const pool = [...defaultPool, ...taggedCustom];
   if (pool.length === 0) return null;
 

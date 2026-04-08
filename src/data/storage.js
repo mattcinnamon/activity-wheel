@@ -113,6 +113,16 @@ export function saveUserCriteria(criteria) {
   saveState(state);
 }
 
+export function getCustomOnly() {
+  return getState().customOnly || false;
+}
+
+export function saveCustomOnly(value) {
+  const state = getState();
+  state.customOnly = value;
+  saveState(state);
+}
+
 export function resetAll() {
   localStorage.removeItem(STORAGE_KEY);
 }

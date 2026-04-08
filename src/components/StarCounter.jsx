@@ -3,7 +3,7 @@ import "./StarCounter.css";
 export default function StarCounter({ count }) {
   if (count === 0) return null;
 
-  const starsNeeded = 10;
+  const starsNeeded = 5;
   const progress = Math.min(count, starsNeeded);
 
   return (
@@ -18,11 +18,9 @@ export default function StarCounter({ count }) {
           </span>
         ))}
       </div>
-      <p className="star-counter__label">
-        {count >= starsNeeded
-          ? "🎁 New toy time!"
-          : `${progress} / ${starsNeeded} stars to a new toy!`}
-      </p>
+      {count >= starsNeeded && (
+        <p className="star-counter__label">🎁 New toy time!</p>
+      )}
     </div>
   );
 }

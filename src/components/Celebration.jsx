@@ -68,11 +68,11 @@ export default function Celebration({ starCount, onDone }) {
         <h1 className="celebration__title">STAR!</h1>
         <p className="celebration__subtitle">You hit the jackpot!</p>
         <div className="celebration__count">
-          {"⭐".repeat(Math.min(starCount, 10))}
+          {"⭐".repeat(Math.min(starCount, 5))}
           <p className="celebration__total">
             {starCount} Star{starCount !== 1 ? "s" : ""} collected!
           </p>
-          {starCount >= 10 && (
+          {starCount >= 5 && (
             <p className="celebration__reward">🎁 Time for a new toy! 🎁</p>
           )}
         </div>

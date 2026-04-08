@@ -62,7 +62,7 @@ export default {
         },
         body: JSON.stringify({
           model: CLAUDE_MODEL,
-          max_tokens: 2048,
+          max_tokens: 4096,
           messages: [{ role: "user", content: prompt }],
         }),
       });
@@ -97,7 +97,7 @@ function buildPrompt(criteria, names, categories) {
 
   let prompt = `You are generating fun, age-appropriate activities for a child.
 
-Generate exactly 3 activities for EACH of these categories: ${catList}
+Generate exactly 6 activities for EACH of these categories: ${catList}
 
 The activities should be tailored to this child:`;
 
