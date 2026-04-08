@@ -1,4 +1,5 @@
 import { getCompletedMissions, getStarCount, getActiveMission, getCustomActivities } from "../data/storage";
+import { personalize } from "../data/personalize";
 import missions from "../data/missions";
 import "./Homepage.css";
 
@@ -58,7 +59,7 @@ export default function Homepage({ onGoToWheel, onGoToCompleted, onGoToMenu, onC
               <span className="homepage__live-time">{timeAgo(activeMission.startedAt)}</span>
             </div>
           </div>
-          <p className="homepage__live-desc">{activeMission.description}</p>
+          <p className="homepage__live-desc">{personalize(activeMission.description)}</p>
           <div className="homepage__live-actions">
             <button
               className="homepage__live-btn homepage__live-btn--done"

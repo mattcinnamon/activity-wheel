@@ -1,3 +1,4 @@
+import { personalize } from "../data/personalize";
 import "./MissionCard.css";
 
 export default function MissionCard({
@@ -26,7 +27,7 @@ export default function MissionCard({
             {mission.title}
             {mission.isCustom && <span className="mission-card__custom-badge">Custom</span>}
           </h3>
-          <p className="mission-card__description">{mission.description}</p>
+          <p className="mission-card__description">{personalize(mission.description)}</p>
         </div>
 
         <div className="mission-card__actions">
