@@ -1,4 +1,5 @@
 import { getCompletedMissions, getCustomActivities } from "../data/storage";
+import { personalize } from "../data/personalize";
 import missions from "../data/missions";
 import "./CompletedActivities.css";
 
@@ -92,7 +93,7 @@ export default function CompletedActivities({ onBack }) {
                       <span className="completed__item-date">{formatDate(item.completedAt)}</span>
                     )}
                   </div>
-                  <p className="completed__item-desc">{item.description}</p>
+                  <p className="completed__item-desc">{personalize(item.description)}</p>
                 </div>
               ))}
             </div>
