@@ -1,4 +1,5 @@
-import { getCompletedMissions, getStarCount, getActiveMission } from "../data/storage";
+import { getCompletedMissions, getStarCount, getActiveMission, getCustomActivities } from "../data/storage";
+import missions from "../data/missions";
 import "./Homepage.css";
 
 const CATEGORIES = [
@@ -26,6 +27,7 @@ export default function Homepage({ onGoToWheel, onGoToCompleted, onGoToMenu, onC
   const completed = getCompletedMissions();
   const starCount = getStarCount();
   const activeMission = getActiveMission();
+  const custom = getCustomActivities();
 
   const categoryCounts = {};
   for (const cat of CATEGORIES) categoryCounts[cat.id] = 0;
@@ -94,7 +96,7 @@ export default function Homepage({ onGoToWheel, onGoToCompleted, onGoToMenu, onC
         <h2 className="homepage__summary-title">Progress</h2>
         <div className="homepage__categories">
           {CATEGORIES.map((cat) => {
-            const total = 12; // approximate per category
+            const total = (missions[cat.id]?.length || 0) + (custom[cat.id]?.length || 0);
             const count = categoryCounts[cat.id];
             return (
               <div

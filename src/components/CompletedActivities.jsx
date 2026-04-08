@@ -1,4 +1,4 @@
-import { getCompletedMissions } from "../data/storage";
+import { getCompletedMissions, getCustomActivities } from "../data/storage";
 import missions from "../data/missions";
 import "./CompletedActivities.css";
 
@@ -19,6 +19,7 @@ function formatDate(iso) {
 
 export default function CompletedActivities({ onBack }) {
   const completed = getCompletedMissions();
+  const custom = getCustomActivities();
 
   // Group by category
   const grouped = {};
@@ -27,7 +28,8 @@ export default function CompletedActivities({ onBack }) {
   for (const entry of completed) {
     const [catId, title] = entry.key.split("::");
     if (!grouped[catId]) continue;
-    const missionData = missions[catId]?.find((m) => m.title === title);
+    const allMissions = [...(missions[catId] || []), ...(custom[catId] || [])];
+    const missionData = allMissions.find((m) => m.title === title);
     grouped[catId].push({
       title,
       description: missionData?.description || "",
@@ -70,7 +72,7 @@ export default function CompletedActivities({ onBack }) {
         {CATEGORIES.map((cat) => {
           const items = grouped[cat.id];
           if (items.length === 0) return null;
-          const total = missions[cat.id]?.length || 0;
+          const total = (missions[cat.id]?.length || 0) + (custom[cat.id]?.length || 0);
 
           return (
             <div key={cat.id} className="completed__group">

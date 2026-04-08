@@ -16,6 +16,7 @@ import {
   getActiveMission,
   setActiveMission,
   clearActiveMission,
+  getCustomActivities,
 } from "./data/storage";
 import "./App.css";
 
@@ -37,8 +38,11 @@ const CATEGORIES = [
 ];
 
 function pickMission(categoryId, excludeTitle) {
-  const pool = missions[categoryId];
-  if (!pool) return null;
+  const defaultPool = missions[categoryId] || [];
+  const custom = getCustomActivities();
+  const customPool = custom[categoryId] || [];
+  const pool = [...defaultPool, ...customPool];
+  if (pool.length === 0) return null;
 
   let available = pool.filter((m) => !isMissionComplete(categoryId, m.title));
   if (available.length === 0) available = pool;
