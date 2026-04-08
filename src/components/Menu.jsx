@@ -115,6 +115,15 @@ function NamesPage({ onBack }) {
   );
 }
 
+const CATEGORIES = [
+  { id: "explore", label: "Explore", emoji: "🔍", color: "#4CAF50" },
+  { id: "experiment", label: "Experiment", emoji: "🧪", color: "#2196F3" },
+  { id: "dance", label: "Dance", emoji: "💃", color: "#E91E63" },
+  { id: "puzzle", label: "Puzzle", emoji: "🧩", color: "#FF9800" },
+  { id: "build", label: "Build", emoji: "🧱", color: "#795548" },
+  { id: "paint", label: "Paint", emoji: "🎨", color: "#9C27B0" },
+];
+
 function ActivitiesPage({ onBack }) {
   const criteria = getUserCriteria() || {
     age: "",
@@ -128,10 +137,10 @@ function ActivitiesPage({ onBack }) {
   const [generating, setGenerating] = useState(false);
   const [genError, setGenError] = useState(null);
   const [genSuccess, setGenSuccess] = useState(false);
-  const [customCount, setCustomCount] = useState(() => {
-    const ca = getCustomActivities();
-    return Object.values(ca).reduce((sum, arr) => sum + arr.length, 0);
-  });
+  const [custom, setCustom] = useState(getCustomActivities);
+  const [editing, setEditing] = useState(null); // "catId::index" key
+  const [editForm, setEditForm] = useState({ title: "", description: "" });
+  const customCount = Object.values(custom).reduce((sum, arr) => sum + arr.length, 0);
 
   const updateField = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -154,8 +163,7 @@ function ActivitiesPage({ onBack }) {
       const names = getNames();
       const activities = await generateActivities(form, names);
       saveCustomActivities(activities);
-      const count = Object.values(activities).reduce((sum, arr) => sum + arr.length, 0);
-      setCustomCount(count);
+      setCustom(activities);
       setGenSuccess(true);
       setTimeout(() => setGenSuccess(false), 3000);
     } catch (err) {
@@ -163,6 +171,31 @@ function ActivitiesPage({ onBack }) {
     } finally {
       setGenerating(false);
     }
+  };
+
+  const startEdit = (catId, index) => {
+    const activity = custom[catId][index];
+    setEditing(`${catId}::${index}`);
+    setEditForm({ title: activity.title, description: activity.description });
+  };
+
+  const saveEdit = () => {
+    const [catId, indexStr] = editing.split("::");
+    const index = parseInt(indexStr);
+    const updated = { ...custom };
+    updated[catId] = [...updated[catId]];
+    updated[catId][index] = { ...updated[catId][index], ...editForm };
+    saveCustomActivities(updated);
+    setCustom(updated);
+    setEditing(null);
+  };
+
+  const deleteActivity = (catId, index) => {
+    const updated = { ...custom };
+    updated[catId] = updated[catId].filter((_, i) => i !== index);
+    if (updated[catId].length === 0) delete updated[catId];
+    saveCustomActivities(updated);
+    setCustom(updated);
   };
 
   const hasAnyCriteria = form.age || form.likes || form.location;
@@ -253,9 +286,62 @@ function ActivitiesPage({ onBack }) {
         )}
 
         {customCount > 0 && (
-          <p className="menu__custom-count">
-            {customCount} custom activit{customCount !== 1 ? "ies" : "y"} saved
-          </p>
+          <div className="menu__activities-list">
+            <h3 className="menu__activities-heading">
+              Custom Activities ({customCount})
+            </h3>
+            {CATEGORIES.map((cat) => {
+              const items = custom[cat.id];
+              if (!items || items.length === 0) return null;
+              return (
+                <div key={cat.id} className="menu__act-group">
+                  <div className="menu__act-group-header" style={{ borderLeftColor: cat.color }}>
+                    <span>{cat.emoji}</span>
+                    <span>{cat.label}</span>
+                  </div>
+                  {items.map((activity, i) => {
+                    const editKey = `${cat.id}::${i}`;
+                    const isEditing = editing === editKey;
+
+                    if (isEditing) {
+                      return (
+                        <div key={i} className="menu__act-item menu__act-item--editing">
+                          <input
+                            className="menu__input"
+                            value={editForm.title}
+                            onChange={(e) => setEditForm((f) => ({ ...f, title: e.target.value }))}
+                          />
+                          <textarea
+                            className="menu__textarea"
+                            value={editForm.description}
+                            onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value }))}
+                            rows={3}
+                          />
+                          <div className="menu__act-edit-actions">
+                            <button className="menu__act-btn menu__act-btn--save" onClick={saveEdit}>Save</button>
+                            <button className="menu__act-btn menu__act-btn--cancel" onClick={() => setEditing(null)}>Cancel</button>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div key={i} className="menu__act-item">
+                        <div className="menu__act-content">
+                          <span className="menu__act-title">{activity.title}</span>
+                          <p className="menu__act-desc">{activity.description}</p>
+                        </div>
+                        <div className="menu__act-actions">
+                          <button className="menu__act-btn menu__act-btn--edit" onClick={() => startEdit(cat.id, i)}>Edit</button>
+                          <button className="menu__act-btn menu__act-btn--delete" onClick={() => deleteActivity(cat.id, i)}>Delete</button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
     </div>

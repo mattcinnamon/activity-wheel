@@ -69,8 +69,8 @@ export default {
 
       if (!claudeResponse.ok) {
         const err = await claudeResponse.text();
-        console.error("Claude API error:", err);
-        return jsonResponse({ error: "AI service error" }, 502, env);
+        console.error("Claude API error:", claudeResponse.status, err);
+        return jsonResponse({ error: "AI service error", status: claudeResponse.status, detail: err }, 502, env);
       }
 
       const claudeData = await claudeResponse.json();

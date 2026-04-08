@@ -202,11 +202,98 @@
   padding: 10px;
 }
 
-.menu__custom-count {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.7);
-  text-align: center;
-  font-weight: 600;
+/* Custom activities list */
+.menu__activities-list {
+  margin-top: 8px;
+}
+
+.menu__activities-heading {
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.menu__act-group {
+  margin-bottom: 16px;
+}
+
+.menu__act-group-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  border-left: 3px solid;
+  padding-left: 10px;
+  margin-bottom: 8px;
+}
+
+.menu__act-item {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.menu__act-item--editing {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.menu__act-content {
+  margin-bottom: 8px;
+}
+
+.menu__act-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.menu__act-desc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.4;
+  margin-top: 4px;
+}
+
+.menu__act-actions,
+.menu__act-edit-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.menu__act-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.menu__act-btn--edit {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.menu__act-btn--delete {
+  background: rgba(255, 23, 68, 0.2);
+  color: #ff6b6b;
+}
+
+.menu__act-btn--save {
+  background: linear-gradient(135deg, #4CAF50, #66BB6A);
+  color: #fff;
+}
+
+.menu__act-btn--cancel {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
 }
 
 /* Clear confirm */
