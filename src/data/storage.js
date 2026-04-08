@@ -69,6 +69,7 @@ export function setActiveMission(category, mission) {
     categoryColor: category.color,
     title: mission.title,
     description: mission.description,
+    isCustom: mission.isCustom || false,
     startedAt: new Date().toISOString(),
   };
   saveState(state);

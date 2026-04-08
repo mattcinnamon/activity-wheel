@@ -22,7 +22,10 @@ export default function MissionCard({
         </div>
 
         <div className="mission-card__body">
-          <h3 className="mission-card__title">{mission.title}</h3>
+          <h3 className="mission-card__title">
+            {mission.title}
+            {mission.isCustom && <span className="mission-card__custom-badge">Custom</span>}
+          </h3>
           <p className="mission-card__description">{mission.description}</p>
         </div>
 

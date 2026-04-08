@@ -41,7 +41,8 @@ function pickMission(categoryId, excludeTitle) {
   const defaultPool = missions[categoryId] || [];
   const custom = getCustomActivities();
   const customPool = custom[categoryId] || [];
-  const pool = [...defaultPool, ...customPool];
+  const taggedCustom = customPool.map((m) => ({ ...m, isCustom: true }));
+  const pool = [...defaultPool, ...taggedCustom];
   if (pool.length === 0) return null;
 
   let available = pool.filter((m) => !isMissionComplete(categoryId, m.title));
