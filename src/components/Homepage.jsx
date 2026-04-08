@@ -38,11 +38,8 @@ export default function Homepage({ onGoToWheel, onGoToCompleted, onGoToMenu, onC
 
   return (
     <div className="homepage">
-      <div className="homepage__top-bar">
-        <div className="homepage__spacer" />
-        <h1 className="homepage__title">🎯 Activity Wheel</h1>
-        <button className="homepage__menu-btn" onClick={onGoToMenu}>🍔</button>
-      </div>
+      <button className="homepage__menu-btn" onClick={onGoToMenu}>🍔</button>
+      <h1 className="homepage__title">🎯 Activity Wheel!</h1>
       <p className="homepage__subtitle">What shall we do today?</p>
 
       {activeMission && (
