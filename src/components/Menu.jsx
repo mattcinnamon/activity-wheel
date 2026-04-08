@@ -272,7 +272,7 @@ function ActivitiesPage({ onBack }) {
           disabled={generating || !hasAnyCriteria}
           onClick={handleGenerate}
         >
-          {generating ? "Generating..." : genSuccess ? "✓ Activities Generated!" : "✨ Generate Custom Activities"}
+          {generating ? "Please stand by, busy creating new activities..." : genSuccess ? "✓ Activities Generated!" : "✨ Generate Custom Activities"}
         </button>
 
         {!hasAnyCriteria && (
