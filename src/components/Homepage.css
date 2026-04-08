@@ -4,6 +4,7 @@
   align-items: center;
   padding: 40px 20px;
   min-height: 100dvh;
+  position: relative;
 }
 
 .homepage__title {
@@ -15,7 +16,7 @@
 }
 
 .homepage__menu-btn {
-  position: fixed;
+  position: absolute;
   top: 12px;
   right: 12px;
   background: none;

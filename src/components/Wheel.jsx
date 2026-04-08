@@ -68,8 +68,9 @@ export default function Wheel({ onResult, disabled }) {
         break;
       }
     }
-    chosenIndexRef.current = chosenIndex;
 
+    // Capture chosen category in closure to prevent race conditions
+    const chosenCategory = CATEGORIES[chosenIndex];
     const chosen = SEGMENTS[chosenIndex];
     const segmentMid = chosen.startAngle + chosen.sweepAngle / 2;
     const targetAngle = 360 - segmentMid;
@@ -80,7 +81,7 @@ export default function Wheel({ onResult, disabled }) {
     setRotation(spinCountRef.current);
 
     setTimeout(() => {
-      setSpinning(false);
+      // Keep spinning=true to lock taps during caterpillar animation
       setChosenSeg(chosen);
       setShowCaterpillar(true);
 
@@ -91,7 +92,8 @@ export default function Wheel({ onResult, disabled }) {
 
       // Transition to envelope/result after eating
       setTimeout(() => {
-        onResult(CATEGORIES[chosenIndexRef.current]);
+        setSpinning(false);
+        onResult(chosenCategory);
       }, 2000);
     }, 4000);
   }, [spinning, disabled, onResult]);
